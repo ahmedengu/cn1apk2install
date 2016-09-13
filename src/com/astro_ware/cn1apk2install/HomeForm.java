@@ -5,8 +5,10 @@ import ca.weblite.codename1.json.JSONException;
 import ca.weblite.codename1.json.JSONObject;
 import com.codename1.io.ConnectionRequest;
 import com.codename1.io.Preferences;
+import com.codename1.ui.Display;
 import com.codename1.ui.events.ActionEvent;
 import com.codename1.ui.list.DefaultListModel;
+import com.codename1.ui.list.MultiList;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -14,6 +16,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class HomeForm extends com.codename1.ui.Form {
+    //-- DON'T EDIT BELOW THIS LINE!!!
+    private com.codename1.ui.Container gui_Container_1 = new com.codename1.ui.Container(new com.codename1.ui.layouts.BoxLayout(com.codename1.ui.layouts.BoxLayout.Y_AXIS));
+    private com.codename1.ui.Label gui_Email = new com.codename1.ui.Label();
+    private com.codename1.ui.Button gui_Poll = new com.codename1.ui.Button();
+    private com.codename1.ui.list.MultiList gui_Apps = new com.codename1.ui.list.MultiList();
+
     public HomeForm() {
         this(com.codename1.ui.util.Resources.getGlobalResources());
     }
@@ -47,6 +55,7 @@ public class HomeForm extends com.codename1.ui.Form {
                     entry.put("Line2", object.getJSONArray("otaInstallLinks").getString(0));
                     data.add(entry);
                 }
+
                 gui_Apps.setModel(new DefaultListModel<>(data));
 
             }
@@ -56,15 +65,11 @@ public class HomeForm extends com.codename1.ui.Form {
     }
 
     public void onAppsActionEvent(ActionEvent ev) {
+        String line2 = ((Map<String, Object>) gui_Apps.getModel().getItemAt(((MultiList) ev.getSource()).getSelectedIndex())).get("Line2").toString();
+        if (!line2.contains("It may be a connection problem"))
+            Display.getInstance().execute(line2);
 
     }
-
-    //-- DON'T EDIT BELOW THIS LINE!!!
-    private com.codename1.ui.Container gui_Container_1 = new com.codename1.ui.Container(new com.codename1.ui.layouts.BoxLayout(com.codename1.ui.layouts.BoxLayout.Y_AXIS));
-    private com.codename1.ui.Label gui_Email = new com.codename1.ui.Label();
-    private com.codename1.ui.Button gui_Poll = new com.codename1.ui.Button();
-    private com.codename1.ui.list.MultiList gui_Apps = new com.codename1.ui.list.MultiList();
-
 
     // <editor-fold defaultstate="collapsed" desc="Generated Code">
     private void guiBuilderBindComponentListeners() {
@@ -72,6 +77,24 @@ public class HomeForm extends com.codename1.ui.Form {
         gui_Poll.addActionListener(callback);
         gui_Apps.addActionListener(callback);
     }
+
+    private void initGuiBuilderComponents(com.codename1.ui.util.Resources resourceObjectInstance) {
+        guiBuilderBindComponentListeners();
+        setLayout(new com.codename1.ui.layouts.BorderLayout());
+        setTitle("HomeForm");
+        setName("HomeForm");
+        addComponent(com.codename1.ui.layouts.BorderLayout.NORTH, gui_Container_1);
+        gui_Container_1.setName("Container_1");
+        gui_Container_1.addComponent(gui_Email);
+        gui_Container_1.addComponent(gui_Poll);
+        gui_Email.setText("Email");
+        gui_Email.setName("Email");
+        gui_Poll.setText("Poll");
+        gui_Poll.setName("Poll");
+        addComponent(com.codename1.ui.layouts.BorderLayout.CENTER, gui_Apps);
+        gui_Container_1.setName("Container_1");
+        gui_Apps.setName("Apps");
+    }// </editor-fold>
 
     class EventCallbackClass implements com.codename1.ui.events.ActionListener, com.codename1.ui.events.DataChangedListener {
         private com.codename1.ui.Component cmp;
@@ -100,24 +123,6 @@ public class HomeForm extends com.codename1.ui.Form {
         public void dataChanged(int type, int index) {
         }
     }
-
-    private void initGuiBuilderComponents(com.codename1.ui.util.Resources resourceObjectInstance) {
-        guiBuilderBindComponentListeners();
-        setLayout(new com.codename1.ui.layouts.BorderLayout());
-        setTitle("HomeForm");
-        setName("HomeForm");
-        addComponent(com.codename1.ui.layouts.BorderLayout.NORTH, gui_Container_1);
-        gui_Container_1.setName("Container_1");
-        gui_Container_1.addComponent(gui_Email);
-        gui_Container_1.addComponent(gui_Poll);
-        gui_Email.setText("Email");
-        gui_Email.setName("Email");
-        gui_Poll.setText("Poll");
-        gui_Poll.setName("Poll");
-        addComponent(com.codename1.ui.layouts.BorderLayout.CENTER, gui_Apps);
-        gui_Container_1.setName("Container_1");
-        gui_Apps.setName("Apps");
-    }// </editor-fold>
 
 //-- DON'T EDIT ABOVE THIS LINE!!!
 }

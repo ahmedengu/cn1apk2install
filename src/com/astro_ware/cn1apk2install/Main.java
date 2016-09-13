@@ -14,7 +14,7 @@ import com.codename1.ui.util.Resources;
  * of building native mobile applications using Java.
  */
 public class Main {
-
+    //TODO: background fetch ...
     private Form current;
     private Resources theme;
 

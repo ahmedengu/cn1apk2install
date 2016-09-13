@@ -9,6 +9,6 @@
     </component>
   </component>
   <component type="MultiList" name="Apps" actionEvent="true">
-        <layoutConstraint value="Center" />
+      <layoutConstraint value="Center"/>
   </component>
 </component>
