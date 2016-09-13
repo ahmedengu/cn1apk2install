@@ -1,27 +1,88 @@
 package com.astro_ware.cn1apk2install;
+
+import com.codename1.components.InfiniteProgress;
+import com.codename1.components.ToastBar;
+import com.codename1.io.ConnectionRequest;
+import com.codename1.io.NetworkManager;
+import com.codename1.io.Preferences;
+import com.codename1.ui.events.ActionEvent;
+
+import java.nio.charset.StandardCharsets;
+
 public class LoginForm extends com.codename1.ui.Form {
     public LoginForm() {
         this(com.codename1.ui.util.Resources.getGlobalResources());
     }
-    
+
     public LoginForm(com.codename1.ui.util.Resources resourceObjectInstance) {
         initGuiBuilderComponents(resourceObjectInstance);
     }
-    
-//-- DON'T EDIT BELOW THIS LINE!!!
+
+    private void onLoginActionEvent(ActionEvent ev) {
+
+        ConnectionRequest request = new ConnectionRequest("https://www.codenameone.com/calls?m=login&email=" + gui_Email.getText() + "&password=" + gui_Password.getText(), true);
+        request.setDisposeOnCompletion(new InfiniteProgress().showInifiniteBlocking());
+        NetworkManager.getInstance().addToQueueAndWait(request);
+
+        String str = new String(request.getResponseData(), StandardCharsets.UTF_8);
+
+        if (request.getResponseCode() == 200 && !str.contains("\"Error\":") && str.contains(gui_Email.getText())) {
+            ToastBar.getInstance().showErrorMessage("loggedin");
+
+            Preferences.set("email", gui_Email.getText());
+            Preferences.set("password", gui_Password.getText());
+
+
+        } else
+            ToastBar.getInstance().showErrorMessage("error");
+
+    }
+
+    //-- DON'T EDIT BELOW THIS LINE!!!
     private com.codename1.ui.Container gui_Container_1 = new com.codename1.ui.Container(new com.codename1.ui.layouts.BoxLayout(com.codename1.ui.layouts.BoxLayout.Y_AXIS));
     private com.codename1.ui.TextField gui_Email = new com.codename1.ui.TextField();
     private com.codename1.ui.TextField gui_Password = new com.codename1.ui.TextField();
     private com.codename1.ui.Button gui_Login = new com.codename1.ui.Button();
 
 
-// <editor-fold defaultstate="collapsed" desc="Generated Code">                          
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">
+    private void guiBuilderBindComponentListeners() {
+        EventCallbackClass callback = new EventCallbackClass();
+        gui_Login.addActionListener(callback);
+    }
+
+    class EventCallbackClass implements com.codename1.ui.events.ActionListener, com.codename1.ui.events.DataChangedListener {
+        private com.codename1.ui.Component cmp;
+
+        public EventCallbackClass(com.codename1.ui.Component cmp) {
+            this.cmp = cmp;
+        }
+
+        public EventCallbackClass() {
+        }
+
+        public void actionPerformed(com.codename1.ui.events.ActionEvent ev) {
+            com.codename1.ui.Component sourceComponent = ev.getComponent();
+            if (sourceComponent.getParent().getLeadParent() != null) {
+                sourceComponent = sourceComponent.getParent().getLeadParent();
+            }
+
+            if (sourceComponent == gui_Login) {
+                onLoginActionEvent(ev);
+            }
+        }
+
+        public void dataChanged(int type, int index) {
+        }
+    }
+
     private void initGuiBuilderComponents(com.codename1.ui.util.Resources resourceObjectInstance) {
+        guiBuilderBindComponentListeners();
         setLayout(new com.codename1.ui.layouts.FlowLayout());
         setTitle("Login");
         setName("LoginForm");
-        ((com.codename1.ui.layouts.FlowLayout)getLayout()).setAlign(com.codename1.ui.Component.CENTER);
-        ((com.codename1.ui.layouts.FlowLayout)getLayout()).setValign(com.codename1.ui.Component.CENTER);
+        ((com.codename1.ui.layouts.FlowLayout) getLayout()).setAlign(com.codename1.ui.Component.CENTER);
+        ((com.codename1.ui.layouts.FlowLayout) getLayout()).setValign(com.codename1.ui.Component.CENTER);
         addComponent(gui_Container_1);
         gui_Container_1.setName("Container_1");
         gui_Container_1.addComponent(gui_Email);
@@ -29,8 +90,10 @@ public class LoginForm extends com.codename1.ui.Form {
         gui_Container_1.addComponent(gui_Login);
         gui_Email.setHint("Email");
         gui_Email.setName("Email");
+        gui_Email.setConstraint(com.codename1.ui.TextArea.EMAILADDR);
         gui_Password.setHint("Password");
         gui_Password.setName("Password");
+        gui_Password.setConstraint(com.codename1.ui.TextArea.PASSWORD);
         gui_Login.setText("Login");
         gui_Login.setName("Login");
         gui_Container_1.setName("Container_1");

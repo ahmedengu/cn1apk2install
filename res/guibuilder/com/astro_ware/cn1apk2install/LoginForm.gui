@@ -6,7 +6,7 @@
     </component>
     <component type="TextField" hint="Password" constraint="65536" name="Password">
     </component>
-    <component type="Button" text="Login" name="Login">
+    <component type="Button" text="Login" name="Login" actionEvent="true">
     </component>
   </component>
 </component>
