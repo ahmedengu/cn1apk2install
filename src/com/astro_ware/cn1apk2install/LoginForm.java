@@ -5,8 +5,6 @@ import com.codename1.io.ConnectionRequest;
 import com.codename1.io.Preferences;
 import com.codename1.ui.events.ActionEvent;
 
-import java.nio.charset.StandardCharsets;
-
 public class LoginForm extends com.codename1.ui.Form {
     public LoginForm() {
         this(com.codename1.ui.util.Resources.getGlobalResources());
@@ -20,9 +18,9 @@ public class LoginForm extends com.codename1.ui.Form {
 
         ConnectionRequest request = Requests.login(gui_Email.getText(), gui_Password.getText());
 
-        String str = new String(request.getResponseData(), StandardCharsets.UTF_8);
+        String str = new String(request.getResponseData());
 
-        if (request.getResponseCode() == 200 && !str.contains("\"Error\":") && str.contains(gui_Email.getText())) {
+        if (request.getResponseCode() == 200 && str.indexOf("\"Error\":") == -1 && str.indexOf(gui_Email.getText()) != -1) {
             ToastBar.getInstance().showErrorMessage("loggedin");
 
             Preferences.set("email", gui_Email.getText());
@@ -50,7 +48,6 @@ public class LoginForm extends com.codename1.ui.Form {
 
     class EventCallbackClass implements com.codename1.ui.events.ActionListener, com.codename1.ui.events.DataChangedListener {
         private com.codename1.ui.Component cmp;
-
         public EventCallbackClass(com.codename1.ui.Component cmp) {
             this.cmp = cmp;
         }
@@ -72,7 +69,6 @@ public class LoginForm extends com.codename1.ui.Form {
         public void dataChanged(int type, int index) {
         }
     }
-
     private void initGuiBuilderComponents(com.codename1.ui.util.Resources resourceObjectInstance) {
         guiBuilderBindComponentListeners();
         setLayout(new com.codename1.ui.layouts.FlowLayout());

@@ -10,7 +10,6 @@ import com.codename1.ui.events.ActionEvent;
 import com.codename1.ui.list.DefaultListModel;
 import com.codename1.ui.list.MultiList;
 
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -31,7 +30,7 @@ public class HomeForm extends com.codename1.ui.Form {
         ConnectionRequest request = Requests.pollSync(Preferences.get("email", ""), Preferences.get("password", ""));
 
         try {
-            JSONArray array = new JSONArray(new String(request.getResponseData(), StandardCharsets.UTF_8));
+            JSONArray array = new JSONArray(new String(request.getResponseData()));
             if (array.length() == 0) {
                 ArrayList<Map<String, Object>> data = new ArrayList<>();
                 Map<String, Object> entry = new HashMap<>();
@@ -61,7 +60,7 @@ public class HomeForm extends com.codename1.ui.Form {
 
     public void onAppsActionEvent(ActionEvent ev) {
         String line2 = ((Map<String, Object>) gui_Apps.getModel().getItemAt(((MultiList) ev.getSource()).getSelectedIndex())).get("Line2").toString();
-        if (!line2.contains("It may be a connection problem"))
+        if (line2.indexOf("It may be a connection problem") == -1)
             Display.getInstance().execute(line2);
 
     }
@@ -73,10 +72,11 @@ public class HomeForm extends com.codename1.ui.Form {
     private com.codename1.ui.list.MultiList gui_Apps = new com.codename1.ui.list.MultiList();
 
 
-    // <editor-fold defaultstate="collapsed" desc="Generated Code">
+// <editor-fold defaultstate="collapsed" desc="Generated Code">                          
     private void guiBuilderBindComponentListeners() {
         EventCallbackClass callback = new EventCallbackClass();
         gui_Poll.addActionListener(callback);
+        gui_Apps.addActionListener(callback);
     }
 
     class EventCallbackClass implements com.codename1.ui.events.ActionListener, com.codename1.ui.events.DataChangedListener {
@@ -90,19 +90,21 @@ public class HomeForm extends com.codename1.ui.Form {
 
         public void actionPerformed(com.codename1.ui.events.ActionEvent ev) {
             com.codename1.ui.Component sourceComponent = ev.getComponent();
-            if (sourceComponent.getParent().getLeadParent() != null) {
+            if(sourceComponent.getParent().getLeadParent() != null) {
                 sourceComponent = sourceComponent.getParent().getLeadParent();
             }
 
-            if (sourceComponent == gui_Poll) {
+            if(sourceComponent == gui_Poll) {
                 onPollActionEvent(ev);
+            }
+            if(sourceComponent == gui_Apps) {
+                onAppsActionEvent(ev);
             }
         }
 
         public void dataChanged(int type, int index) {
         }
     }
-
     private void initGuiBuilderComponents(com.codename1.ui.util.Resources resourceObjectInstance) {
         guiBuilderBindComponentListeners();
         setLayout(new com.codename1.ui.layouts.BorderLayout());

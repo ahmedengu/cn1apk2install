@@ -8,7 +8,7 @@
     <component type="Button" text="Poll" name="Poll" actionEvent="true">
     </component>
   </component>
-    <component type="MultiList" name="Apps">
-        <layoutConstraint value="Center"/>
+  <component type="MultiList" name="Apps" actionEvent="true">
+    <layoutConstraint value="Center"/>
   </component>
 </component>
