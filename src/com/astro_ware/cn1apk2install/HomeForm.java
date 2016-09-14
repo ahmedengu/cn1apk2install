@@ -90,11 +90,29 @@ public class HomeForm extends com.codename1.ui.Form {
 
                     Display.getInstance().execute(FileSystemStorage.getInstance().getAppHomePath() + line2.substring(line2.lastIndexOf('/') + 1));
                 }
-            };
-            request.setPost(false);
 
+            };
+            request.setFollowRedirects(true);
+            request.setPost(false);
             request.setDestinationStorage(line2.substring(line2.lastIndexOf('/') + 1));
-            ToastBar.showConnectionProgress("Downloading!", request, null, null);
+            request.setReadResponseForErrors(true);
+            request.setFailSilently(true);
+            ToastBar.showConnectionProgress("Redirecting!", request, value -> {
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                ToastBar.showConnectionProgress("Downloading!", request, null, null);
+            }, (sender, err, errorCode, errorMessage) -> {
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                ToastBar.showConnectionProgress("Downloading!", request, null, null);
+            });
+
             NetworkManager.getInstance().addToQueue(request);
         }
     }
