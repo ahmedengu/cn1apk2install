@@ -3,12 +3,10 @@
 <component type="Form" layout="BorderLayout" borderLayoutAbsoluteCenter="false" title="Home" name="HomeForm">
   <component type="Container" layout="BoxLayout" boxLayoutAxis="Y"  name="Container_1">
     <layoutConstraint value="North" />
-    <component type="Label" text="Email" name="Email">
-    </component>
-    <component type="Button" text="Poll" name="Poll" actionEvent="true">
+    <component type="Button" text="Email" name="Email" actionEvent="true">
     </component>
   </component>
-  <component type="MultiList" name="Apps" actionEvent="true">
+  <component type="MultiList" name="Apps">
     <layoutConstraint value="Center"/>
   </component>
 </component>

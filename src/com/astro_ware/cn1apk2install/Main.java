@@ -14,7 +14,6 @@ import com.codename1.ui.util.Resources;
  * of building native mobile applications using Java.
  */
 public class Main {
-    //TODO: background fetch ...
     private Form current;
     private Resources theme;
 
@@ -29,12 +28,16 @@ public class Main {
     }
 
     public void start() {
+
         if (current != null) {
             current.show();
             return;
         }
         current = (Preferences.get("email", "").equals("")) ? new LoginForm() : new HomeForm();
         current.show();
+        if (!Preferences.get("email", "").equals(""))
+            Display.getInstance().setPreferredBackgroundFetchInterval(10);
+
     }
 
     public void stop() {
@@ -48,4 +51,13 @@ public class Main {
     public void destroy() {
     }
 
+//    @Override
+//    public void performBackgroundFetch(long deadline, Callback<Boolean> onComplete) {
+//        if (!Preferences.get("email", "").equals("")) {
+//            ConnectionRequest request = Requests.pollSync(Preferences.get("email", ""), Preferences.get("password", ""));
+//            System.out.println(new String(request.getResponseData()));
+//
+//
+//        }
+//    }
 }

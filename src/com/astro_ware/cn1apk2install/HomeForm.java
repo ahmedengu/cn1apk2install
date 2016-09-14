@@ -3,7 +3,10 @@ package com.astro_ware.cn1apk2install;
 import ca.weblite.codename1.json.JSONArray;
 import ca.weblite.codename1.json.JSONException;
 import ca.weblite.codename1.json.JSONObject;
+import com.codename1.components.ToastBar;
 import com.codename1.io.ConnectionRequest;
+import com.codename1.io.FileSystemStorage;
+import com.codename1.io.NetworkManager;
 import com.codename1.io.Preferences;
 import com.codename1.ui.Display;
 import com.codename1.ui.events.ActionEvent;
@@ -15,20 +18,38 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class HomeForm extends com.codename1.ui.Form {
-    //TODO: Logout
     public HomeForm() {
         this(com.codename1.ui.util.Resources.getGlobalResources());
+
     }
 
     public HomeForm(com.codename1.ui.util.Resources resourceObjectInstance) {
+        if (Preferences.get("email", "").equals("")) {
+            Preferences.clearAll();
+            new LoginForm().show();
+            return;
+        }
+
         initGuiBuilderComponents(resourceObjectInstance);
-        gui_Email.setText("Email: " + Preferences.get("email", ""));
-        onPollActionEvent(null);
+        gui_Email.setText(Preferences.get("email", "") + ", Logout");
+        pollToList(Requests.pollSync(Preferences.get("email", ""), Preferences.get("password", "")));
+        gui_Apps.addPullToRefresh(() -> {
+            ConnectionRequest request = Requests.pollAsync(Preferences.get("email", ""), Preferences.get("password", ""));
+            request.addResponseCodeListener(evt -> pollToList(request));
+        });
+    }
+
+    private void onEmailActionEvent(ActionEvent ev) {
+        Preferences.clearAll();
+        new LoginForm().show();
     }
 
     private void onPollActionEvent(ActionEvent ev) {
         ConnectionRequest request = Requests.pollSync(Preferences.get("email", ""), Preferences.get("password", ""));
+        pollToList(request);
+    }
 
+    private void pollToList(ConnectionRequest request) {
         try {
             JSONArray array = new JSONArray(new String(request.getResponseData()));
             if (array.length() == 0) {
@@ -45,8 +66,8 @@ public class HomeForm extends com.codename1.ui.Form {
                 for (int i = 0; i < array.length(); i++) {
                     Map<String, Object> entry = new HashMap<>();
                     JSONObject object = array.getJSONObject(i);
-                    entry.put("Line1", object.getString("appTitle"));
-                    entry.put("Line2", object.getJSONArray("otaInstallLinks").getString(0));
+                    entry.put("Line1", (object.getString("appTitle").equals("null")) ? "App" : object.getString("appTitle"));
+                    entry.put("Line2", (object.getString("appTitle").equals("null")) ? "inProgress" : object.getJSONArray("otaInstallLinks").getString(0));
                     data.add(entry);
                 }
 
@@ -59,23 +80,34 @@ public class HomeForm extends com.codename1.ui.Form {
     }
 
     public void onAppsActionEvent(ActionEvent ev) {
-        String line2 = ((Map<String, Object>) gui_Apps.getModel().getItemAt(((MultiList) ev.getSource()).getSelectedIndex())).get("Line2").toString();
-        if (line2.indexOf("It may be a connection problem") == -1)
-            Display.getInstance().execute(line2);
 
+        String line2 = ((Map<String, Object>) gui_Apps.getModel().getItemAt(((MultiList) ev.getSource()).getSelectedIndex())).get("Line2").toString();
+        if (line2.indexOf("It may be a connection problem") == -1 && line2.indexOf("inProgress") == -1) {
+            ConnectionRequest request = new ConnectionRequest(line2) {
+                @Override
+                protected void postResponse() {
+                    String[] split = line2.split("/");
+                    Display.getInstance().execute(FileSystemStorage.getInstance().getAppHomePath() + split[split.length - 1]);
+                }
+            };
+            request.setPost(false);
+            String[] split = line2.split("/");
+            request.setDestinationStorage(split[split.length - 1]);
+            ToastBar.showConnectionProgress("Downloading!", request, null, null);
+            NetworkManager.getInstance().addToQueue(request);
+        }
     }
 
     //-- DON'T EDIT BELOW THIS LINE!!!
     private com.codename1.ui.Container gui_Container_1 = new com.codename1.ui.Container(new com.codename1.ui.layouts.BoxLayout(com.codename1.ui.layouts.BoxLayout.Y_AXIS));
-    private com.codename1.ui.Label gui_Email = new com.codename1.ui.Label();
-    private com.codename1.ui.Button gui_Poll = new com.codename1.ui.Button();
+    private com.codename1.ui.Button gui_Email = new com.codename1.ui.Button();
     private com.codename1.ui.list.MultiList gui_Apps = new com.codename1.ui.list.MultiList();
 
 
 // <editor-fold defaultstate="collapsed" desc="Generated Code">                          
     private void guiBuilderBindComponentListeners() {
         EventCallbackClass callback = new EventCallbackClass();
-        gui_Poll.addActionListener(callback);
+        gui_Email.addActionListener(callback);
         gui_Apps.addActionListener(callback);
     }
 
@@ -94,8 +126,8 @@ public class HomeForm extends com.codename1.ui.Form {
                 sourceComponent = sourceComponent.getParent().getLeadParent();
             }
 
-            if(sourceComponent == gui_Poll) {
-                onPollActionEvent(ev);
+            if (sourceComponent == gui_Email) {
+                onEmailActionEvent(ev);
             }
             if(sourceComponent == gui_Apps) {
                 onAppsActionEvent(ev);
@@ -113,11 +145,8 @@ public class HomeForm extends com.codename1.ui.Form {
         addComponent(com.codename1.ui.layouts.BorderLayout.NORTH, gui_Container_1);
         gui_Container_1.setName("Container_1");
         gui_Container_1.addComponent(gui_Email);
-        gui_Container_1.addComponent(gui_Poll);
         gui_Email.setText("Email");
         gui_Email.setName("Email");
-        gui_Poll.setText("Poll");
-        gui_Poll.setName("Poll");
         addComponent(com.codename1.ui.layouts.BorderLayout.CENTER, gui_Apps);
         gui_Container_1.setName("Container_1");
         gui_Apps.setName("Apps");

@@ -22,4 +22,10 @@ public class Requests {
         NetworkManager.getInstance().addToQueueAndWait(request);
         return request;
     }
+
+    public static ConnectionRequest pollAsync(String email, String password) {
+        ConnectionRequest request = new ConnectionRequest("https://www.codenameone.com/calls?m=updateBuildStatus&email=" + email + "&password=" + password, true);
+        NetworkManager.getInstance().addToQueue(request);
+        return request;
+    }
 }
