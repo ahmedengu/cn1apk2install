@@ -35,7 +35,7 @@ public class HomeForm extends com.codename1.ui.Form {
         pollToList(Requests.pollSync(Preferences.get("email", ""), Preferences.get("password", "")));
         gui_Apps.addPullToRefresh(() -> {
             ConnectionRequest request = Requests.pollAsync(Preferences.get("email", ""), Preferences.get("password", ""));
-            request.addResponseCodeListener(evt -> pollToList(request));
+            request.addResponseListener(evt -> pollToList(request));
         });
     }
 
@@ -51,6 +51,7 @@ public class HomeForm extends com.codename1.ui.Form {
 
     private void pollToList(ConnectionRequest request) {
         try {
+
             JSONArray array = new JSONArray(new String(request.getResponseData()));
             if (array.length() == 0) {
                 ArrayList<Map<String, Object>> data = new ArrayList<>();
@@ -86,13 +87,13 @@ public class HomeForm extends com.codename1.ui.Form {
             ConnectionRequest request = new ConnectionRequest(line2) {
                 @Override
                 protected void postResponse() {
-                    String[] split = line2.split("/");
-                    Display.getInstance().execute(FileSystemStorage.getInstance().getAppHomePath() + split[split.length - 1]);
+
+                    Display.getInstance().execute(FileSystemStorage.getInstance().getAppHomePath() + line2.substring(line2.lastIndexOf('/') + 1));
                 }
             };
             request.setPost(false);
-            String[] split = line2.split("/");
-            request.setDestinationStorage(split[split.length - 1]);
+
+            request.setDestinationStorage(line2.substring(line2.lastIndexOf('/') + 1));
             ToastBar.showConnectionProgress("Downloading!", request, null, null);
             NetworkManager.getInstance().addToQueue(request);
         }

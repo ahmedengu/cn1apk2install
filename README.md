@@ -9,5 +9,4 @@ App to auto download your android cloud builds CN1
 
 * Improve UI/UX
 * Background fetch 
-* Logout button
-* Logo
+* Logo and probably a name 

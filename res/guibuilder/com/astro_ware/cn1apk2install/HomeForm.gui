@@ -6,7 +6,7 @@
     <component type="Button" text="Email" name="Email" actionEvent="true">
     </component>
   </component>
-  <component type="MultiList" name="Apps">
+  <component type="MultiList" name="Apps" actionEvent="true">
     <layoutConstraint value="Center"/>
   </component>
 </component>
