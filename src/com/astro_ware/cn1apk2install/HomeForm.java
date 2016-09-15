@@ -4,7 +4,6 @@ import ca.weblite.codename1.json.JSONArray;
 import ca.weblite.codename1.json.JSONException;
 import ca.weblite.codename1.json.JSONObject;
 import com.codename1.components.InfiniteProgress;
-import com.codename1.components.ToastBar;
 import com.codename1.io.*;
 import com.codename1.ui.*;
 import com.codename1.ui.animations.CommonTransitions;
@@ -112,7 +111,7 @@ public class HomeForm extends com.codename1.ui.Form {
     private com.codename1.ui.list.MultiList gui_Apps = new com.codename1.ui.list.MultiList();
 
 
-// <editor-fold defaultstate="collapsed" desc="Generated Code">                          
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">
     private void guiBuilderBindComponentListeners() {
         EventCallbackClass callback = new EventCallbackClass();
         gui_Email.addActionListener(callback);
@@ -121,6 +120,7 @@ public class HomeForm extends com.codename1.ui.Form {
 
     class EventCallbackClass implements com.codename1.ui.events.ActionListener, com.codename1.ui.events.DataChangedListener {
         private com.codename1.ui.Component cmp;
+
         public EventCallbackClass(com.codename1.ui.Component cmp) {
             this.cmp = cmp;
         }
@@ -130,14 +130,14 @@ public class HomeForm extends com.codename1.ui.Form {
 
         public void actionPerformed(com.codename1.ui.events.ActionEvent ev) {
             com.codename1.ui.Component sourceComponent = ev.getComponent();
-            if(sourceComponent.getParent().getLeadParent() != null) {
+            if (sourceComponent.getParent().getLeadParent() != null) {
                 sourceComponent = sourceComponent.getParent().getLeadParent();
             }
 
             if (sourceComponent == gui_Email) {
                 onEmailActionEvent(ev);
             }
-            if(sourceComponent == gui_Apps) {
+            if (sourceComponent == gui_Apps) {
                 onAppsActionEvent(ev);
             }
         }
@@ -145,6 +145,7 @@ public class HomeForm extends com.codename1.ui.Form {
         public void dataChanged(int type, int index) {
         }
     }
+
     private void initGuiBuilderComponents(com.codename1.ui.util.Resources resourceObjectInstance) {
         guiBuilderBindComponentListeners();
         setLayout(new com.codename1.ui.layouts.BorderLayout());
@@ -901,7 +902,7 @@ class TB {
      */
     public static void showConnectionProgress(String message, final ConnectionRequest cr,
                                               final SuccessCallback<NetworkEvent> onSuccess, final FailureCallback<NetworkEvent> onError) {
-        final ToastBar.Status s = ToastBar.getInstance().createStatus();
+        final TB.Status s = TB.getInstance().createStatus();
         s.setProgress(-1);
         s.setMessage(message);
         s.show();
@@ -924,14 +925,6 @@ class TB {
 
             public void actionPerformed(NetworkEvent evt) {
                 switch (evt.getProgressType()) {
-//                    case NetworkEvent.PROGRESS_TYPE_COMPLETED:
-//                        NetworkManager.getInstance().removeErrorListener(errorListener);
-//                        NetworkManager.getInstance().removeProgressListener(this);
-//                        s.clear();
-//                        if (onSuccess != null && (cr.getResponseCode() == 200 || cr.getResponseCode() == 202)) {
-//                            onSuccess.onSucess(evt);
-//                        }
-//                        break;
                     case NetworkEvent.PROGRESS_TYPE_INITIALIZING:
                         s.setProgress(-1);
                         break;
@@ -948,12 +941,15 @@ class TB {
                 }
             }
         };
-        cr.addResponseListener(evt -> {
-            NetworkManager.getInstance().removeErrorListener(errorListener);
-            NetworkManager.getInstance().removeProgressListener(progListener[0]);
-            s.clear();
-            if (onSuccess != null && (cr.getResponseCode() == 200 || cr.getResponseCode() == 202)) {
-                onSuccess.onSucess(evt);
+        cr.addResponseListener(new ActionListener<NetworkEvent>() {
+            @Override
+            public void actionPerformed(NetworkEvent evt) {
+                NetworkManager.getInstance().removeErrorListener(errorListener);
+                NetworkManager.getInstance().removeProgressListener(progListener[0]);
+                s.clear();
+                if (onSuccess != null && (cr.getResponseCode() == 200 || cr.getResponseCode() == 202)) {
+                    onSuccess.onSucess(evt);
+                }
             }
         });
         NetworkManager.getInstance().addProgressListener(progListener[0]);
